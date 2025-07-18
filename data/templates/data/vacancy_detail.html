@@ -1,0 +1,36 @@
+{% extends "main/base.html" %}
+
+{% block title %}{{ vacancy.title }} — Postman{% endblock %}
+
+{% block content %}
+<h1>{{ vacancy.title }}</h1>
+<p><strong>Описание:</strong></p>
+<p>{{ vacancy.description }}</p>
+
+<hr>
+<h5>Кандидаты на вакансию:</h5>
+<ul>
+    {% for candidate in vacancy.candidates.all %}
+    <li>{{ candidate.firstname }} {{ candidate.surname }} — {{ candidate.status }}</li>
+    {% empty %}
+    <p>Пока нет кандидатов.</p>
+    {% endfor %}
+</ul>
+
+<hr>
+<h5>Шаблоны писем:</h5>
+<ul>
+    {% for template in vacancy.templates.all %}
+    <li>{{ template.title }}</li>
+    {% empty %}
+    <p>Пока нет прикрепленных писем.</p>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'vacancy_edit' vacancy.id %}" class="btn btn-outline-primary">Редактировать</a>
+<a href="{% url 'vacancies' %}" class="btn btn-secondary ms-2">Назад к списку</a>
+<form action="{% url 'vacancy_delete' vacancy.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить вакансию?')">Удалить</button>
+</form>
+{% endblock %}

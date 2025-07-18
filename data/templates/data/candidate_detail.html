@@ -1,0 +1,36 @@
+{% extends "main/base.html" %}
+
+{% block title %}{{ candidate.full_name }} — Postman{% endblock %}
+
+{% block content %}
+<h1>{{ candidate.firstname }} {{ candidate.surname }} {{ candidate.patronymic }}</h1>
+<p><strong>Дата рождения:</strong> {{ candidate.birthday }}</p>
+<p><strong>Email:</strong> {{ candidate.email }}</p>
+<p><strong>phone:</strong> {{ candidate.phone }}</p>
+<p><strong>Статус:</strong> {{ candidate.status }}</p>
+{% if candidate.cv %}
+    <p><strong>Резюме:</strong>
+        <a href="{{ candidate.cv.url }}" target="_blank">Открыть резюме</a>
+    </p>
+{% else %}
+    <p><strong>Резюме:</strong> не прикреплено</p>
+{% endif %}{% if candidate.notes %}
+    <p><strong>Заметки:</strong> {{ candidate.notes }}</p>
+{% endif %}
+
+<h5>Прикреплено к вакансиям:</h5>
+<ul>
+    {% for vacancy in candidate.vacancies.all %}
+    <li>{{ vacancy.title }}</li>
+    {% empty %}
+    <p>Пока ни к чему не прикреплен</p>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'candidates' %}" class="btn btn-secondary mt-3">Назад к списку</a>
+<a href="{% url 'candidate_edit' candidate.id %}" class="btn btn-outline-primary">Редактировать</a>
+<form action="{% url 'candidate_delete' candidate.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить кандидата?')">Удалить</button>
+</form>
+{% endblock %}

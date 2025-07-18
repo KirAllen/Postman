@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Postman{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+</head>
+<body>
+
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-primary shadow-sm custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold px-3 py-2 bg-light text-primary rounded-pill" href="{% url 'index' %}" style="font-weight: bold; font-size: 1.2rem;">
+            📬 Postman
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav text-center">
+                <li class="nav-item">
+                    <a class="nav-link nav-effect text-white" href="{% url 'vacancies' %}"><i class="fas fa-briefcase"></i> Вакансии</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-effect text-white" href="{% url 'candidates' %}"><i class="fas fa-users"></i> Кандидаты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-effect text-white" href="{% url 'templates' %}"><i class="fas fa-envelope"></i> Шаблоны писем</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-effect text-white" href="{% url 'about' %}"><i class="fas fa-info-circle"></i> О нас</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="nav-link nav-effect text-white"><i class="fas fa-user"></i> {{ user.username }}</a>
+                <a href="{% url 'logout' %}" class="nav-link nav-effect text-white"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link nav-effect text-white"><i class="fas fa-sign-in-alt"></i> Войти</a>
+                <a href="{% url 'register' %}" class="nav-link nav-effect text-white"><i class="fas fa-user-plus"></i> Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- Контент -->
+<main class="container" style="margin-top: 100px;">
+    <div class="d-flex justify-content-center">
+        <div class="w-100" style="max-width: 900px; text-align: center;">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Navbar Scroll Script -->
+<script>
+document.addEventListener('scroll', function () {
+    const navbar = document.querySelector('.custom-navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+</script>
+
+</body>
+</html>
