@@ -1,0 +1,14 @@
+{% extends "main/base.html" %}
+
+
+{% block title %}Редактировать вакансию — Postman{% endblock %}
+
+{% block content %}
+<h1>Редактирование вакансии</h1>
+<form method="post" class="w-75">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    <a href="{% url 'vacancy_detail' vacancy.id %}" class="btn btn-secondary ms-2">Назад</a>
+</form>
+{% endblock %}

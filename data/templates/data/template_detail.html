@@ -1,0 +1,26 @@
+{% extends "main/base.html" %}
+
+{% block title %}{{ template.title }} — Postman{% endblock %}
+
+{% block content %}
+<h1>{{ template.title }}</h1>
+<p><strong>Содержание:</strong></p>
+<p>{{ template.content }}</p>
+
+<hr>
+<h5>Прикреплено к вакансиям:</h5>
+<ul>
+    {% for vacancy in template.vacancies.all %}
+    <li>{{ vacancy.title }}</li>
+    {% empty %}
+    <p>Пока ни к чему не прикреплено.</p>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'template_edit' template.id %}" class="btn btn-outline-primary">Редактировать</a>
+<a href="{% url 'templates' %}" class="btn btn-secondary ms-2">Назад к списку</a>
+<form action="{% url 'template_delete' template.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить письмо?')">Удалить</button>
+</form>
+{% endblock %}

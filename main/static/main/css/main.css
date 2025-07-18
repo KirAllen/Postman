@@ -1,0 +1,118 @@
+:root {
+    --color-teal: #60cfcf;
+    --color-blue: #5c7dd5;
+    --color-green: #6dd66d;
+    --color-orange: #ffa870;
+}
+
+/* Общие стили */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Навбар */
+.custom-navbar {
+    background-color: var(--color-blue);
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.custom-navbar.scrolled {
+    background-color: rgba(92, 125, 213, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+/* Центровка контейнера */
+.container {
+    padding-top: 80px;
+    text-align: center;
+}
+
+/* Формы */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    padding: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button, .btn {
+    border-radius: 8px;
+}
+
+/* Кнопки */
+.btn-primary {
+    background-color: var(--color-teal);
+    border-color: var(--color-teal);
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #3fbaba;
+    border-color: #3fbaba;
+}
+
+.btn-outline-primary {
+    border-color: var(--color-blue);
+    color: var(--color-blue);
+    transition: all 0.2s;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--color-blue);
+    color: white;
+}
+
+/* Карточки */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    text-align: left;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Заголовки */
+h1, h2, h3 {
+    color: var(--color-blue);
+    margin-bottom: 20px;
+}
+
+/* Ссылки */
+a {
+    text-decoration: none;
+}
+
+/* Центровка списков и таблиц */
+.table, .list-group {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* Эффект при наведении на ссылки в навбаре */
+.nav-effect {
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.nav-effect:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+    font-weight: 500;
+}

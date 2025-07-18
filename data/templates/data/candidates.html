@@ -1,0 +1,36 @@
+{% extends "main/base.html" %}
+
+
+{% block title %}Кандидаты — Postman{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Кандидаты</h1>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for candidate in candidates %}
+    <div class="col">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-success">{{ candidate.firstname }} {{ candidate.surname }} {{ candidate.patronymic }}</h5>
+                <p class="card-text"><strong>Email:</strong> {{ candidate.email }}</p>
+                <p class="card-text"><strong>Статус:</strong> {{ candidate.status }}</p>
+                {% if candidate.notes %}
+                    <p class="card-text"><em>{{ candidate.notes|truncatewords:20 }}</em></p>
+                {% endif %}
+            </div>
+            <div class="card-footer d-flex justify-content-between text-muted">
+                <span>{{ candidate.vacancy.title }}</span>
+                <a href="{% url 'candidate_detail' candidate.id %}" class="btn btn-sm btn-outline-success">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Кандидатов пока нет.</p>
+    {% endfor %}
+</div>
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'candidate_create' %}" class="btn btn-outline-primary">
+        <i class="fas fa-plus"></i> Добавить кандидата
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "main/base.html" %}
+
+{% block title %}Меню{% endblock %}
+
+{% block content %}
+                    <li>
+                        <a  href="{% url 'vacancies' %}">
+                            <i ></i> Вакансии
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'candidates' %}">
+                            <i ></i> Список кандидатов
+                        </a>
+                    </li>
+                    <li >
+                        <a  href="{% url 'templates' %}">
+                            <i ></i> Шаблоны писем
+                        </a>
+                    </li>
+{% endblock %}

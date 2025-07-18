@@ -1,0 +1,55 @@
+{% extends "main/base.html" %}
+
+{% block title %}Добавить вакансию — Postman{% endblock %}
+
+{% block content %}
+<h1 style="text-align: center; color: #4169e1;">
+    {% if editing %}Редактировать вакансию{% else %}Новая вакансия{% endif %}
+</h1>
+<form method="post" style="max-width: 500px; margin: 0 auto;">
+    {% csrf_token %}
+
+    <!-- Поле title -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.title.id_for_label }}">Название вакансии</label><br>
+        {{ form.title }}
+        {% if form.title.errors %}
+            <div class="error">{{ form.title.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле description -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.description.id_for_label }}">Описание вакансии</label><br>
+        {{ form.description }}
+        {% if form.description.errors %}
+            <div class="error">{{ form.description.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле candidates -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.candidates.id_for_label }}">Кандидаты</label><br>
+        {{ form.candidates }}
+        {% if form.candidates.errors %}
+            <div class="error">{{ form.candidates.errors }}</div>
+        {% endif %}
+    </div>
+
+     <!-- Поле templates -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.templates.id_for_label }}">Письма</label><br>
+        {{ form.templates }}
+        {% if form.templates.errors %}
+            <div class="error">{{ form.templates.errors }}</div>
+        {% endif %}
+    </div>
+
+
+    <!-- Кнопки -->
+    <div class="form-actions" style="text-align: center;">
+        <button type="submit" class="btn btn-save">Сохранить</button>
+        <a href="{% url 'vacancies' %}" class="btn btn-cancel">Отменить</a>
+    </div>
+</form>
+{% endblock %}

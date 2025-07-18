@@ -1,0 +1,108 @@
+{% extends "main/base.html" %}
+
+{% block title %}Добавить кандидата — Postman{% endblock %}
+
+{% block content %}
+<h1 style="text-align: center; color: #4169e1;">
+    {% if editing %}Редактировать карточку кандидата{% else %}Новый кандидат{% endif %}
+</h1>
+<form method="post" enctype="multipart/form-data" style="max-width: 500px; margin: 0 auto;">
+    {% csrf_token %}
+
+    <!-- Поле firstname -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.title.id_for_label }}">Имя</label><br>
+        {{ form.firstname }}
+        {% if form.firstname.errors %}
+            <div class="error">{{ form.firstname.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле surname -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.surname.id_for_label }}">Фамилия</label><br>
+        {{ form.surname }}
+        {% if form.surname.errors %}
+            <div class="error">{{ form.surname.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле patronymic -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.patronymic.id_for_label }}">Отчество</label><br>
+        {{ form.patronymic }}
+        {% if form.patronymic.errors %}
+            <div class="error">{{ form.patronymic.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле birthday -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.birthday.id_for_label }}">Дата рождения</label><br>
+        {{ form.birthday }}
+        {% if form.birthday.errors %}
+            <div class="error">{{ form.birthday.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле cv -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.cv.id_for_label }}">Резюме</label><br>
+        {{ form.cv }}
+        {% if form.cv.errors %}
+            <div class="error">{{ form.cv.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле email -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.email.id_for_label }}">E-mail</label><br>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="error">{{ form.email.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле phone -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.phone.id_for_label }}">Телефон</label><br>
+        {{ form.phone }}
+        {% if form.phone.errors %}
+            <div class="error">{{ form.phone.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле vacancies -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.vacancies.id_for_label }}">Вакансии</label><br>
+        {{ form.vacancies }}
+        {% if form.vacancies.errors %}
+            <div class="error">{{ form.vacancies.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле status -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.status.id_for_label }}">Статус</label><br>
+        {{ form.status }}
+        {% if form.status.errors %}
+            <div class="error">{{ form.status.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Поле notes -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.notes.id_for_label }}">Заметки</label><br>
+        {{ form.notes }}
+        {% if form.notes.errors %}
+            <div class="error">{{ form.notes.errors }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Кнопки -->
+    <div class="form-actions" style="text-align: center;">
+        <button type="submit" class="btn btn-save">Сохранить</button>
+        <a href="{% url 'vacancies' %}" class="btn btn-cancel">Отменить</a>
+    </div>
+</form>
+{% endblock %}
