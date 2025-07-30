@@ -107,7 +107,7 @@ def candidate_delete(request, pk):
 # список вакансий
 @login_required
 def vacancies(request):
-    vacancies = Vacancy.objects.all()
+    vacancies = Vacancy.objects.filter(user=request.user)
     return render(request, 'data/vacancies.html', {'vacancies': vacancies})
 
 
@@ -118,9 +118,10 @@ def vacancy_create(request):
         form = VacancyForm(request.POST)
         if form.is_valid():
             vacancy = form.save(commit=False)
+            vacancy.user = request.user
             vacancy.save()
             form.save_m2m()
-        return redirect('vacancies')
+            return redirect('vacancies')
     else:
         form = VacancyForm()
     return render(request, 'data/vacancy_create.html', {'form': form})
