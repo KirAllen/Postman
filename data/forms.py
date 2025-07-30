@@ -22,36 +22,96 @@ class UserLoginForm(AuthenticationForm):
 class CandidateForm(forms.ModelForm):
     birthday = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-        input_formats=['%Y-%m-%d'],
+        input_formats=['%Y-%m-%d'], label="Дата рождения"
+    )
+
+    vacancies = forms.ModelMultipleChoiceField(
+        queryset=Vacancy.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Вакансии"
     )
 
     class Meta:
         model = Candidate
-        fields = ['firstname', 'surname', 'patronymic', 'birthday', 'email', 'phone', 'cv',
-                  'vacancies', 'status', 'notes']
+        fields = [
+            'firstname',
+            'surname',
+            'patronymic',
+            'birthday',
+            'email',
+            'phone',
+            'tg',
+            'cv',
+            'vacancies',
+            'status',
+            'notes',
+            'vacancies',
+        ]
         widgets = {
             'notes': forms.Textarea(attrs={'rows': 4}),
-            'vacancies': forms.CheckboxSelectMultiple(),
         }
+
+    def __init__(self, *args, **kwargs):
+        # получаем instance, если он передан
+        instance = kwargs.get('instance')
+        super().__init__(*args, **kwargs)
+
+        if instance:
+            # Выставляем начальные значения для поля vacancies
+            self.fields['vacancies'].initial = instance.vacancies.all()
 
 
 # Форма создания вакансии
 class VacancyForm(forms.ModelForm):
+    candidates = forms.ModelMultipleChoiceField(
+        queryset=Candidate.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Кандидаты"
+    )
+
+    templates = forms.ModelMultipleChoiceField(
+        queryset=Template.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Письма"
+    )
+
     class Meta:
         model = Vacancy
-        fields = ['title', 'description', 'candidates', 'templates']
-        widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'candidates': forms.CheckboxSelectMultiple(),
-            'templates': forms.CheckboxSelectMultiple(),
-        }
+        fields = ['title',
+                  'description',
+                  'candidates',
+                  'templates']
 
 
 class TemplateForm(forms.ModelForm):
+    vacancies = forms.ModelMultipleChoiceField(
+        queryset=Vacancy.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Вакансии"
+    )
+
     class Meta:
         model = Template
         fields = ['title', 'content', 'vacancies']
         widgets = {
             'content': forms.Textarea(attrs={'rows': 4}),
-            'vacancies': forms.CheckboxSelectMultiple(),
         }
+
+    def __init__(self, *args, **kwargs):
+        # получаем instance, если он передан
+        instance = kwargs.get('instance')
+        super().__init__(*args, **kwargs)
+
+        if instance:
+            # Выставляем начальные значения для поля vacancies
+            self.fields['vacancies'].initial = instance.vacancies.all()
+
+
+# Форма для загрузки файла данными кандидата
+
+class UploadCandidatesForm(forms.Form):
+    file = forms.FileField(label="Файл Excel (.xlsx)")

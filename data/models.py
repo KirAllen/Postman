@@ -18,10 +18,11 @@ class User(AbstractUser):
 class Candidate(models.Model):
     # Статусы кандидата
     STATUS_CHOICES = [
-        ('new', 'Новый'),
-        ('interview', 'Назначено собеседование'),
-        ('accepted', 'Принят'),
-        ('rejected', 'Отклонен'),
+        ('New', 'Новый'),
+        ('Message sent', 'Письмо отправлено'),
+        ('Response recieved', 'Ответ получен'),
+        ('Contact fixe', 'Контакт закреплен'),
+        ('Rejected', 'Отклонен')
     ]
 
     firstname = models.CharField(max_length=100, verbose_name='Имя', blank=True)
@@ -29,6 +30,7 @@ class Candidate(models.Model):
     patronymic = models.CharField(max_length=100, verbose_name='Отчество', blank=True)
     birthday = models.DateField(verbose_name='Дата рождения', blank=True)
     email = models.EmailField(verbose_name='E-mail', blank=True)
+    tg = models.CharField(max_length=100, verbose_name='Телеграм', blank=True)
     phone = models.CharField(max_length=15, verbose_name='Номер телефона', blank=True)
     cv = models.FileField(
         upload_to='cvs/',
@@ -37,7 +39,6 @@ class Candidate(models.Model):
         null=True,
         verbose_name='Резюме'
     )
-    vacancies = models.ManyToManyField('Vacancy', blank=True)
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
@@ -57,7 +58,6 @@ class Candidate(models.Model):
 class Template(models.Model):
     title = models.CharField(max_length=150)
     content = models.TextField()
-    vacancies = models.ManyToManyField('Vacancy', blank=True)
 
     class Meta:
         verbose_name = "Письмо"
@@ -78,8 +78,8 @@ class Vacancy(models.Model):
         related_name="vacancies",
         verbose_name="Пользователь"
     )
-    candidates = models.ManyToManyField(Candidate, blank=True)
-    templates = models.ManyToManyField(Template, blank=True)
+    candidates = models.ManyToManyField(Candidate, related_name='vacancies', blank=True)
+    templates = models.ManyToManyField(Template,related_name='vacancies', blank=True)
 
     class Meta:
         verbose_name = "Вакансия"

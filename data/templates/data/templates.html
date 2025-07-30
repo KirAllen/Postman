@@ -12,9 +12,16 @@
             <div class="card-body">
                 <h5 class="card-title text-primary">{{ template.title }}</h5>
                 <p class="card-text">{{ template.content|truncatewords:25 }}</p>
+                <h5>Прикреплено к вакансиям:</h5>
+                <ul>
+                    {% for vacancy in template.vacancies.all %}
+                    <li>{{ vacancy.title }}</li>
+                    {% empty %}
+                    <p>Пока ни к чему не прикреплен</p>
+                    {% endfor %}
+                </ul>
             </div>
             <div class="card-footer text-muted d-flex justify-content-between">
-                <span>Прикреплено к вакансиям: {{ template.vacancies }}</span>
                 <a href="{% url 'template_detail' template.id %}" class="btn btn-sm btn-outline-primary">Открыть</a>
             </div>
         </div>
