@@ -137,3 +137,11 @@ AUTH_USER_MODEL = 'data.User'
 LOGIN_URL = 'login'  # имя URL для входа
 LOGIN_REDIRECT_URL = 'dashboard'  # куда перенаправлять после входа
 LOGOUT_REDIRECT_URL = 'login'  # куда после выхода
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'kir.allyanov@gmail.com'
+EMAIL_HOST_PASSWORD = 'qnxg fthr izce phiu'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

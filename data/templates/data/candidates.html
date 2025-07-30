@@ -14,6 +14,14 @@
                 <h5 class="card-title text-success">{{ candidate.firstname }} {{ candidate.surname }} {{ candidate.patronymic }}</h5>
                 <p class="card-text"><strong>Email:</strong> {{ candidate.email }}</p>
                 <p class="card-text"><strong>Статус:</strong> {{ candidate.status }}</p>
+                <h5>Прикреплено к вакансиям:</h5>
+                <ul>
+                    {% for vacancy in candidate.vacancies.all %}
+                    <li>{{ vacancy.title }}</li>
+                    {% empty %}
+                    <p>Пока ни к чему не прикреплен</p>
+                    {% endfor %}
+                </ul>
                 {% if candidate.notes %}
                     <p class="card-text"><em>{{ candidate.notes|truncatewords:20 }}</em></p>
                 {% endif %}
@@ -33,4 +41,8 @@
         <i class="fas fa-plus"></i> Добавить кандидата
     </a>
 </div>
+<div class="d-flex justify-content-end mb-3">
+    <a href="candidates_upload" class="btn btn-outline-primary">
+        <i class="fas fa-plus"></i> Добавить список кандидатов
+    </a>
 {% endblock %}

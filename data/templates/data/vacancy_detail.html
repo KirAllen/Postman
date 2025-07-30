@@ -29,6 +29,9 @@
 
 <a href="{% url 'vacancy_edit' vacancy.id %}" class="btn btn-outline-primary">Редактировать</a>
 <a href="{% url 'vacancies' %}" class="btn btn-secondary ms-2">Назад к списку</a>
+<a href="{% url 'send_vacancy_emails' vacancy.id %}" class="btn btn-primary">
+    Отправить письма кандидатам
+</a>
 <form action="{% url 'vacancy_delete' vacancy.id %}" method="post" style="display:inline;">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить вакансию?')">Удалить</button>

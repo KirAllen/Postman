@@ -63,6 +63,16 @@
         {% endif %}
     </div>
 
+    <!-- Поле tg -->
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label for="{{ form.tg.id_for_label }}">Telegram</label><br>
+        {{ form.tg }}
+        {% if form.tg.errors %}
+            <div class="error">{{ form.tg.errors }}</div>
+        {% endif %}
+    </div>
+
+
     <!-- Поле phone -->
     <div class="form-group" style="margin-bottom: 15px;">
         <label for="{{ form.phone.id_for_label }}">Телефон</label><br>
