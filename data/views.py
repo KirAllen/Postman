@@ -1,10 +1,10 @@
-from .models import Vacancy, Candidate, Template
+from .models import Vacancy, Candidate, Template, User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from .forms import UserRegisterForm, UserLoginForm, VacancyForm, TemplateForm, CandidateForm, UploadCandidatesForm
+from .forms import UserRegisterForm, UserLoginForm, VacancyForm, TemplateForm, CandidateForm, UploadCandidatesForm, UserEditForm
 
 import openpyxl
 
@@ -159,6 +159,7 @@ def vacancy_delete(request, pk):
         return redirect('vacancies')
     return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
 
+#
 @login_required
 def template_create(request):
     if request.method == 'POST':
@@ -260,3 +261,18 @@ def user_logout(request):
     logout(request)
     messages.info(request, 'Вы вышли из аккаунта.')
     return redirect('/data/login')
+
+#Редактирование карточки пользователя
+
+@login_required
+def user_edit(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = UserEditForm(instance=user)
+        return render(request, 'data/user_edit.html', {'form': form, 'editing': True})
+

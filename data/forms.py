@@ -111,7 +111,13 @@ class TemplateForm(forms.ModelForm):
             self.fields['vacancies'].initial = instance.vacancies.all()
 
 
-# Форма для загрузки файла данными кандидата
+# Форма редактирования профиля пользователя
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
 
+
+# Форма для загрузки файла данными кандидата
 class UploadCandidatesForm(forms.Form):
     file = forms.FileField(label="Файл Excel (.xlsx)")
