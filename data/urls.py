@@ -8,6 +8,7 @@ urlpatterns = [
     path('vacancies/', views.vacancies, name='vacancies'), # Список вакансий
     path('candidates/', views.candidates, name='candidates'), # Список кандидатов
     path('dashboard/', views.dashboard, name='dashboard'), # личный кабинет
+    path('user_edit/', views.user_edit, name='user_edit'), # редактирование профиля пользователя
     path('templates/', views.templates, name='templates'), # список писем
     path('candidates/<int:pk>/', views.candidate_detail, name='candidate_detail'), # детали по конкретному кандидату
     path('register/', views.register, name='register'), # регистрация
