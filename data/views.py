@@ -1,6 +1,11 @@
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import Vacancy, Candidate, Template, User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
 
 from django.contrib.auth import login, logout
 from django.contrib import messages
@@ -10,6 +15,7 @@ import openpyxl
 
 from .emails import send_email_to_candidate
 
+# личный кабинет
 @login_required
 def dashboard(request):
     return render(request, 'data/dashboard.html')
@@ -32,6 +38,7 @@ def candidate_detail(request, pk):
     candidate = get_object_or_404(Candidate, pk=pk)
     return render(request, 'data/candidate_detail.html', {'candidate': candidate})
 
+# Создание карточки кандидата
 @login_required
 def candidate_create(request):
     if request.method == 'POST':
@@ -64,6 +71,7 @@ def candidate_edit(request, pk):
         form = CandidateForm(instance=candidate)
     return render(request, 'data/candidate_create.html', {'form': form, 'editing': True})
 
+# загрузка списка кандидатов из файла excel
 @login_required
 def candidates_upload(request):
     if request.method == 'POST':
@@ -94,7 +102,7 @@ def candidates_upload(request):
         form = UploadCandidatesForm()
     return render(request, 'data/candidates_upload.html', {'form': form})
 
-
+# удаление кандидата
 @login_required
 def candidate_delete(request, pk):
     candidate = get_object_or_404(Candidate, pk=pk)
@@ -159,7 +167,7 @@ def vacancy_delete(request, pk):
         return redirect('vacancies')
     return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
 
-#
+# создание шаблона письма
 @login_required
 def template_create(request):
     if request.method == 'POST':
@@ -176,6 +184,7 @@ def template_create(request):
     return render(request, 'data/template_create.html', {'form': form})
 
 
+# редактирование шаблона письма
 @login_required
 def template_edit(request, pk):
     template = get_object_or_404(Template, pk=pk)
@@ -195,11 +204,13 @@ def template_edit(request, pk):
 
     return render(request, 'data/template_create.html', {'form': form, 'editing': True})
 
+# информация по письму
 @login_required
 def template_detail(request, pk):
     template = get_object_or_404(Template, pk=pk)
     return render(request, 'data/template_detail.html', {'template': template})
 
+# удаление пиьсма
 @login_required
 def template_delete(request, pk):
     template = get_object_or_404(Template, pk=pk)
@@ -208,25 +219,39 @@ def template_delete(request, pk):
         return redirect('templates')
     return render(request, 'data/template_detail.html', {'template': template})
 
+# Отправка писем кандидатам
 @login_required
+@require_POST
 def send_vacancy_emails(request, vacancy_id):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
     candidates = vacancy.candidates.all()
     templates = vacancy.templates.all()
+    username = request.user.username
 
     if not templates.exists():
-        messages.error(request, "Нет шаблона письма, прикрепленного к вакансии.")
-        return redirect('vacancy_detail', pk=vacancy_id)
+        return JsonResponse({"success": False, "message": "Нет шаблона письма у вакансии."}, status=400)
 
-    # Например, используем первый шаблон
+
+
+    if not templates.exists():
+        return JsonResponse({"success": False, "message": "Нет шаблона письма, прикрепленного к вакансии"})
+
     template = templates.first()
+    sent = 0
+    for c in candidates:
+        if c.email:
+            # функция отправки
+            if c.status == "Письмо отправлено":
+                return JsonResponse({"success": False, "message": f"{username}, хорош спамить!! Письмо отправлено!!!"})
+            else:
+                send_email_to_candidate(c, template)
+                c.status = "Письмо отправлено"
+                c.save(update_fields=["status"])
+                sent += 1
 
-    for candidate in candidates:
-        if candidate.email:
-            send_email_to_candidate(candidate, template)
+    return JsonResponse({"success": True, "message": f"Письма отправлены {sent} кандидатам."})
 
-    messages.success(request, f"Письма успешно отправлены {candidates.count()} кандидатам.")
-    return redirect('vacancy_detail', pk=vacancy_id)
+
 
 
 # Регистрация

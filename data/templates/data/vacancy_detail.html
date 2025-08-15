@@ -11,7 +11,10 @@
 <h5>Кандидаты на вакансию:</h5>
 <ul>
     {% for candidate in vacancy.candidates.all %}
-    <li>{{ candidate.firstname }} {{ candidate.surname }} — {{ candidate.status }}</li>
+     <a href="{% url 'candidate_detail' candidate.id %}" class="btn btn-sm btn-outline-success">
+         {{ candidate.firstname }} {{ candidate.surname }} —
+         <span class="candidate-status">{{ candidate.status }}</span>
+     </a>
     {% empty %}
     <p>Пока нет кандидатов.</p>
     {% endfor %}
@@ -21,19 +24,105 @@
 <h5>Шаблоны писем:</h5>
 <ul>
     {% for template in vacancy.templates.all %}
-    <li>{{ template.title }}</li>
+    <a href="{% url 'template_detail' template.id %}" class="btn btn-sm btn-outline-primary">
+        {{ template.title }}
+    </a>
     {% empty %}
     <p>Пока нет прикрепленных писем.</p>
     {% endfor %}
 </ul>
 
+
 <a href="{% url 'vacancy_edit' vacancy.id %}" class="btn btn-outline-primary">Редактировать</a>
 <a href="{% url 'vacancies' %}" class="btn btn-secondary ms-2">Назад к списку</a>
-<a href="{% url 'send_vacancy_emails' vacancy.id %}" class="btn btn-primary">
-    Отправить письма кандидатам
-</a>
+<button id="send-btn"
+        class="btn btn-primary"
+        data-url="{% url 'send_vacancy_emails' vacancy.id %}">
+  Отправить письма кандидатам
+</button>
+
+<div id="flash" class="alert" style="display:none;margin-top:10px;"></div>
+
+
+<script>
+// Достаём CSRF-токен из cookie (надёжно и независимо от формы)
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function showFlash(kind, text) {
+  const el = document.getElementById('flash');
+  el.className = 'alert ' + (kind === 'ok' ? 'alert-success' : 'alert-danger');
+  el.textContent = text;
+  el.style.display = 'block';
+  // мягко исчезает через 4 сек
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+document.getElementById('send-btn').addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const url = e.currentTarget.dataset.url;
+  const csrftoken = getCookie('csrftoken');
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      // ВАЖНО: отправляем cookie сессии -> иначе login_required вернёт HTML-редирект
+      credentials: 'same-origin'
+    });
+
+    // если сервер отдал редирект (например, на /login/) — это не JSON
+    if (resp.redirected) {
+      showFlash('err', 'Требуется вход в систему. Перезайдите и попробуйте снова.');
+      return;
+    }
+
+    const ct = resp.headers.get('content-type') || '';
+
+    if (!resp.ok) {
+      // читаем текст для диагностики (403 CSRF, 404 и т.п.)
+      const text = await resp.text();
+      throw new Error(`HTTP ${resp.status}. ${text.slice(0, 200)}`);
+    }
+
+    if (ct.includes('application/json')) {
+      const data = await resp.json();
+
+      if (data.success) {
+        showFlash('ok', data.message || 'Готово');
+
+        // Обновляем статусы на странице
+        document.querySelectorAll('#cand-list .status').forEach(el => {
+          el.textContent = 'Письмо отправлено';
+        });
+      } else {
+        showFlash('err', data.message || 'Ошибка');
+      }
+    } else {
+      // Вот здесь раньше и падало: пришёл HTML с <!DOCTYPE ...>
+      const text = await resp.text();
+      throw new Error(`Ожидался JSON, но пришёл ${ct || 'неизвестный тип'}: ${text.slice(0, 200)}`);
+    }
+  } catch (err) {
+    showFlash('err', 'Ошибка: ' + err.message);
+    console.error(err);
+  }
+});
+</script>
+
+
 <form action="{% url 'vacancy_delete' vacancy.id %}" method="post" style="display:inline;">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить вакансию?')">Удалить</button>
 </form>
+
+
 {% endblock %}
