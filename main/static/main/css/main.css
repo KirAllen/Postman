@@ -1,3 +1,17 @@
+
+hr {
+    margin: 10px 0;   /* уменьшаем отступы сверху и снизу */
+}
+
+ul.candidates-list {
+    list-style-type: none; /* убираем точки */
+    padding-left: 0;       /* убираем отступ слева */
+    margin: 0;             /* убираем лишние внешние отступы */
+}
+
+
+
+
 :root {
     --color-teal: #60cfcf;
     --color-blue: #5c7dd5;
@@ -88,7 +102,8 @@ button, .btn {
 /* Заголовки */
 h1, h2, h3 {
     color: var(--color-blue);
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 /* Ссылки */
