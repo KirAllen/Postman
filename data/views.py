@@ -1,24 +1,26 @@
+import json
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from .models import Vacancy, Candidate, Template, User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
-
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from .forms import UserRegisterForm, UserLoginForm, VacancyForm, TemplateForm, CandidateForm, UploadCandidatesForm, UserEditForm
+from .forms import UserRegisterForm, UserLoginForm, VacancyForm, TemplateForm, CandidateForm, UploadCandidatesForm, \
+    UserEditForm
 
 import openpyxl
 
 from .emails import send_email_to_candidate
 
+
 # личный кабинет
 @login_required
 def dashboard(request):
     return render(request, 'data/dashboard.html')
+
 
 # шаблоны писем кандидатам
 @login_required
@@ -26,17 +28,20 @@ def templates(request):
     templates = Template.objects.all()
     return render(request, 'data/templates.html', {'templates': templates})
 
+
 # список всех кандидатов
 @login_required
 def candidates(request):
     candidates = Candidate.objects.all()
-    return render(request, 'data/candidates.html', {'candidates' : candidates})
+    return render(request, 'data/candidates.html', {'candidates': candidates})
+
 
 # подробная информация о кандидате
 @login_required
 def candidate_detail(request, pk):
     candidate = get_object_or_404(Candidate, pk=pk)
     return render(request, 'data/candidate_detail.html', {'candidate': candidate})
+
 
 # Создание карточки кандидата
 @login_required
@@ -54,6 +59,7 @@ def candidate_create(request):
         form = CandidateForm()
     return render(request, 'data/candidate_create.html', {'form': form})
 
+
 # редактирование карточки кандидата
 @login_required
 def candidate_edit(request, pk):
@@ -70,6 +76,7 @@ def candidate_edit(request, pk):
     else:
         form = CandidateForm(instance=candidate)
     return render(request, 'data/candidate_create.html', {'form': form, 'editing': True})
+
 
 # загрузка списка кандидатов из файла excel
 @login_required
@@ -101,6 +108,7 @@ def candidates_upload(request):
     else:
         form = UploadCandidatesForm()
     return render(request, 'data/candidates_upload.html', {'form': form})
+
 
 # удаление кандидата
 @login_required
@@ -141,6 +149,7 @@ def vacancy_detail(request, pk):
     vacancy = get_object_or_404(Vacancy, pk=pk)
     return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
 
+
 # редактирование вакансии
 @login_required
 def vacancy_edit(request, pk):
@@ -158,6 +167,7 @@ def vacancy_edit(request, pk):
 
     return render(request, 'data/vacancy_create.html', {'form': form, 'editing': True})
 
+
 # удаление вакансии
 @login_required
 def vacancy_delete(request, pk):
@@ -166,6 +176,7 @@ def vacancy_delete(request, pk):
         vacancy.delete()
         return redirect('vacancies')
     return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
+
 
 # создание шаблона письма
 @login_required
@@ -204,11 +215,13 @@ def template_edit(request, pk):
 
     return render(request, 'data/template_create.html', {'form': form, 'editing': True})
 
+
 # информация по письму
 @login_required
 def template_detail(request, pk):
     template = get_object_or_404(Template, pk=pk)
     return render(request, 'data/template_detail.html', {'template': template})
+
 
 # удаление пиьсма
 @login_required
@@ -219,39 +232,59 @@ def template_delete(request, pk):
         return redirect('templates')
     return render(request, 'data/template_detail.html', {'template': template})
 
+
 # Отправка писем кандидатам
 @login_required
 @require_POST
 def send_vacancy_emails(request, vacancy_id):
     vacancy = get_object_or_404(Vacancy, id=vacancy_id)
-    candidates = vacancy.candidates.all()
-    templates = vacancy.templates.all()
     username = request.user.username
 
-    if not templates.exists():
-        return JsonResponse({"success": False, "message": "Нет шаблона письма у вакансии."}, status=400)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"success": False, "message": "Некорректный JSON"},
+            status=400,
+            json_dumps_params={'ensure_ascii': False}
+        )
+
+    candidate_ids = data.get('candidates', [])
+    template_id = data.get('template_id')
 
 
+    if not candidate_ids:
+        return JsonResponse({'success': False, "message": 'Ну выбери, кому ты там писать собрался'}, status=400,
+                            json_dumps_params={'ensure_ascii': False})
+    if not template_id:
+        return JsonResponse({'success': False, "message": 'Надо выбрать письмо, которое будешь отправлять'}, status=400,
+                            json_dumps_params={'ensure_ascii': False})
 
-    if not templates.exists():
-        return JsonResponse({"success": False, "message": "Нет шаблона письма, прикрепленного к вакансии"})
+    template = get_object_or_404(vacancy.templates, id=template_id)
+    candidates = vacancy.candidates.filter(id__in=candidate_ids)
 
-    template = templates.first()
     sent = 0
+    errors = []
     for c in candidates:
         if c.email:
             # функция отправки
             if c.status == "Письмо отправлено":
-                return JsonResponse({"success": False, "message": f"{username}, хорош спамить!! Письмо отправлено!!!"})
+                errors.append(f"{username}, хорош спамить {c.firstname} {c.surname}!! Письмо уже отправлено!!!")
             else:
                 send_email_to_candidate(c, template)
                 c.status = "Письмо отправлено"
                 c.save(update_fields=["status"])
                 sent += 1
+    if errors:
+        return JsonResponse(
+            {"success": sent > 0, "message": "; ".join(errors)},
+            json_dumps_params={'ensure_ascii': False}
+        )
 
-    return JsonResponse({"success": True, "message": f"Письма отправлены {sent} кандидатам."})
-
-
+    return JsonResponse(
+        {"success": True, "message": f"Письма отправлены {sent} кандидатам."},
+        json_dumps_params={'ensure_ascii': False}
+    )
 
 
 # Регистрация
@@ -266,6 +299,7 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'data/register.html', {'form': form})
+
 
 # Вход пользователя
 def user_login(request):
@@ -287,7 +321,8 @@ def user_logout(request):
     messages.info(request, 'Вы вышли из аккаунта.')
     return redirect('/data/login')
 
-#Редактирование карточки пользователя
+
+# Редактирование карточки пользователя
 
 @login_required
 def user_edit(request):
@@ -300,4 +335,3 @@ def user_edit(request):
     else:
         form = UserEditForm(instance=user)
         return render(request, 'data/user_edit.html', {'form': form, 'editing': True})
-
