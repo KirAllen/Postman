@@ -9,45 +9,50 @@
 
 <hr>
 <h5>Кандидаты на вакансию:</h5>
-<ul>
-    {% for candidate in vacancy.candidates.all %}
-     <a href="{% url 'candidate_detail' candidate.id %}" class="btn btn-sm btn-outline-success">
-         {{ candidate.firstname }} {{ candidate.surname }} —
-         <span class="candidate-status">{{ candidate.status }}</span>
-     </a>
-    {% empty %}
-    <p>Пока нет кандидатов.</p>
-    {% endfor %}
+<ul class="candidates-list" id="cand-list">
+  {% for candidate in vacancy.candidates.all %}
+    <li>
+      <label>
+        <input type="checkbox" name="candidates" value="{{ candidate.id }}">
+        <a href="{% url 'candidate_detail' candidate.id %}" class="btn btn-sm btn-outline-success">
+          {{ candidate.firstname }} {{ candidate.surname }} —
+          <span class="status">{{ candidate.status }}</span>
+        </a>
+      </label>
+    </li>
+  {% empty %}
+    <li><p>Пока нет кандидатов.</p></li>
+  {% endfor %}
 </ul>
 
 <hr>
 <h5>Шаблоны писем:</h5>
-<ul>
-    {% for template in vacancy.templates.all %}
-    <a href="{% url 'template_detail' template.id %}" class="btn btn-sm btn-outline-primary">
-        {{ template.title }}
-    </a>
-    {% empty %}
-    <p>Пока нет прикрепленных писем.</p>
-    {% endfor %}
-</ul>
+<select name="template_id" id="template-select" class="form-select">
+  {% for template in vacancy.templates.all %}
+    <option value="{{ template.id }}">{{ template.title }}</option>
+  {% empty %}
+    <option disabled>Пока нет прикрепленных писем</option>
+  {% endfor %}
+</select>
 
+<br><br>
 
-<a href="{% url 'vacancy_edit' vacancy.id %}" class="btn btn-outline-primary">Редактировать</a>
-<a href="{% url 'vacancies' %}" class="btn btn-secondary ms-2">Назад к списку</a>
 <button id="send-btn"
         class="btn btn-primary"
         data-url="{% url 'send_vacancy_emails' vacancy.id %}">
   Отправить письма кандидатам
 </button>
 
+<a href="{% url 'vacancy_edit' vacancy.id %}" class="btn btn-outline-primary">Редактировать</a>
+<a href="{% url 'vacancies' %}" class="btn btn-secondary ms-2">Назад к списку</a>
 
+<form action="{% url 'vacancy_delete' vacancy.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить вакансию?')">Удалить</button>
 
-
-<div id="flash" class="alert" style="display:none;margin-top:10px;"></
+<div id="flash" class="alert" style="display:none;margin-top:10px;"></div>
 
 <script>
-// Достаём CSRF-токен из cookie (надёжно и независимо от формы)
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -59,7 +64,6 @@ function showFlash(kind, text) {
   el.className = 'alert ' + (kind === 'ok' ? 'alert-success' : 'alert-danger');
   el.textContent = text;
   el.style.display = 'block';
-  // мягко исчезает через 4 сек
   setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
 
@@ -69,6 +73,11 @@ document.getElementById('send-btn').addEventListener('click', async (e) => {
   const url = e.currentTarget.dataset.url;
   const csrftoken = getCookie('csrftoken');
 
+  // Собираем выбранных кандидатов и шаблон
+  const candidates = Array.from(document.querySelectorAll('input[name="candidates"]:checked'))
+                         .map(el => el.value);
+  const templateId = document.getElementById('template-select').value;
+
   try {
     const resp = await fetch(url, {
       method: 'POST',
@@ -77,31 +86,30 @@ document.getElementById('send-btn').addEventListener('click', async (e) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      // ВАЖНО: отправляем cookie сессии -> иначе login_required вернёт HTML-редирект
-      credentials: 'same-origin'
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        candidates: candidates,
+        template_id: templateId
+      })
     });
 
-    // если сервер отдал редирект (например, на /login/) — это не JSON
     if (resp.redirected) {
       showFlash('err', 'Требуется вход в систему. Перезайдите и попробуйте снова.');
       return;
     }
 
-    const ct = resp.headers.get('content-type') || '';
-
     if (!resp.ok) {
-      // читаем текст для диагностики (403 CSRF, 404 и т.п.)
       const text = await resp.text();
       throw new Error(`HTTP ${resp.status}. ${text.slice(0, 200)}`);
     }
+
+    const ct = resp.headers.get('content-type') || '';
 
     if (ct.includes('application/json')) {
       const data = await resp.json();
 
       if (data.success) {
         showFlash('ok', data.message || 'Готово');
-
-        // Обновляем статусы на странице
         document.querySelectorAll('#cand-list .status').forEach(el => {
           el.textContent = 'Письмо отправлено';
         });
@@ -109,7 +117,6 @@ document.getElementById('send-btn').addEventListener('click', async (e) => {
         showFlash('err', data.message || 'Ошибка');
       }
     } else {
-      // Вот здесь раньше и падало: пришёл HTML с <!DOCTYPE ...>
       const text = await resp.text();
       throw new Error(`Ожидался JSON, но пришёл ${ct || 'неизвестный тип'}: ${text.slice(0, 200)}`);
     }
@@ -120,11 +127,5 @@ document.getElementById('send-btn').addEventListener('click', async (e) => {
 });
 </script>
 
-
-<form action="{% url 'vacancy_delete' vacancy.id %}" method="post" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить вакансию?')">Удалить</button>
 </form>
-
-
 {% endblock %}
