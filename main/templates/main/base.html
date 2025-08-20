@@ -27,6 +27,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        {% if user.is_authenticated %}
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
@@ -43,6 +44,7 @@
                 </li>
             </ul>
         </div>
+        {% endif %}
 
         <div class="navbar-nav ms-auto">
             {% if user.is_authenticated %}
