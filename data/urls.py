@@ -20,6 +20,7 @@ urlpatterns = [
     path('vacancy_delete/<int:pk>/', views.vacancy_delete, name='vacancy_delete'),  # удаление кандидата
     path('vacancies/<int:vacancy_id>/send_emails/', views.send_vacancy_emails, name='send_vacancy_emails'), # отправка писем по вакансии
     path('template_create/', views.template_create, name='template_create'), # Создание шаблона письмак
+    # path('template_generate/<int:vacancy_id>', views.generate_template, name='generate_template'), # Генерация письма
     path('template_edit/<int:pk>', views.template_edit, name='template_edit'), # редактирование письма
     path('template_detail/<int:pk>/', views.template_detail, name='template_detail'), # детали по конкретнму письму
     path('template_delete/<int:pk>/', views.template_delete, name='template_delete'),  # удаление кандидата
