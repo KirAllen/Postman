@@ -86,6 +86,7 @@ class VacancyForm(forms.ModelForm):
                   'templates']
 
 
+# Форма создания письма
 class TemplateForm(forms.ModelForm):
     vacancies = forms.ModelMultipleChoiceField(
         queryset=Vacancy.objects.all(),

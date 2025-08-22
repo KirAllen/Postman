@@ -56,8 +56,8 @@ class Candidate(models.Model):
 
 
 class Template(models.Model):
-    title = models.CharField(max_length=150)
-    content = models.TextField()
+    title = models.CharField(max_length=150, blank=True)
+    content = models.TextField(blank=True)
 
     class Meta:
         verbose_name = "Письмо"
@@ -68,8 +68,8 @@ class Template(models.Model):
 
 
 class Vacancy(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
+    title = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

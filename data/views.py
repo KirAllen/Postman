@@ -15,6 +15,8 @@ import openpyxl
 
 from .emails import send_email_to_candidate
 
+from .YandexGPT import generation_letter
+
 
 # личный кабинет
 @login_required
@@ -181,18 +183,51 @@ def vacancy_delete(request, pk):
 # создание шаблона письма
 @login_required
 def template_create(request):
+    letter = None
+
     if request.method == 'POST':
         form = TemplateForm(request.POST)
         if form.is_valid():
-            template = form.save()
-            # Обновим связанные вакансии вручную
-            template.vacancies.clear()  # Убираем все старые связи
-            for vacancy in form.cleaned_data['vacancies']:
-                vacancy.templates.add(template)
-            return redirect('templates')
+            action = request.POST.get('action')
+
+            if action == 'generate':
+                vacancy = form.cleaned_data['vacancies'] if 'vacancies' in form.cleaned_data else None
+                if vacancy:
+                    if hasattr(vacancy, 'all'):
+                        vacancy = vacancy.first()
+                    if vacancy:
+                        letter = generation_letter(vacancy.title, vacancy.description)
+                        print(letter)
+            elif action == 'save':
+                template = form.save(commit=False) # сразу не сохраняем в бд
+                if letter:
+                    template.content = letter
+                template.save()
+                form.save_m2m()  # сохраняем связи M2M
+                return redirect('templates')
     else:
         form = TemplateForm()
-    return render(request, 'data/template_create.html', {'form': form})
+
+    return render(request, 'data/template_create.html', {'form': form, 'generated_text': letter})
+
+
+# @login_required
+# def generate_template(request, vacancy_id):
+#     vacancy = None
+#     letter =None
+#     if request.method == 'POST':
+#         form = TemplateForm(request.POST)
+#         if form.is_valid():
+#             action = request.POST.get('action')
+#             if action == 'generate':
+#                 vacancy_id = form.cleaned_data['vacancy']
+#                 vacancy = get_object_or_404(Vacancy, pk=vacancy_id)
+#                 letter = generation_letter(vacancy.title, vacancy.description)
+#         else:
+#             form = TemplateForm()
+#
+#         return render(request, 'data/template_create.html', {'form': form, 'content': letter, 'vacancies':vacancy})
+
 
 
 # редактирование шаблона письма
