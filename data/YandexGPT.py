@@ -1,7 +1,14 @@
-import json
-
 import requests
-from postman.secrects import y_key
+
+from dotenv import load_dotenv
+import os
+
+# Загружаем переменные из .env
+load_dotenv()
+
+# Получаем значение переменной по её имени
+API_KEY = os.getenv("API_KEY")
+
 
 def generation_letter(title: str = "мамкин программист", description: str ="программировать мамок"):
     prompt = {
@@ -31,7 +38,7 @@ def generation_letter(title: str = "мамкин программист", descri
     url = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion'
     headers = {
         "Content-Type": "application/json",
-        "Authorization": y_key
+        "Authorization": API_KEY
     }
 
     response = requests.post(url, headers=headers, json=prompt)
