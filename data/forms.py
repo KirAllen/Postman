@@ -5,10 +5,10 @@ from .models import Candidate, Vacancy, Template
 from registration.models import User
 
 
-# Форма входа (логина)
-class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(label='Имя пользователя', max_length=100)
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+# # Форма входа (логина)
+# class UserLoginForm(AuthenticationForm):
+#     username = forms.CharField(label='Имя пользователя', max_length=100)
+#     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
 
 
 # Форма кандидата (заполнение профиля)
