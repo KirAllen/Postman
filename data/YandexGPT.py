@@ -38,7 +38,7 @@ def generation_letter(title: str = "мамкин программист", descri
     url = 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion'
     headers = {
         "Content-Type": "application/json",
-        "Authorization": API_KEY
+        "Authorization": API_KEY # ключ берется из защищенного файла
     }
 
     response = requests.post(url, headers=headers, json=prompt)
