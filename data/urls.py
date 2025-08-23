@@ -4,14 +4,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # path('', views.data_home, name='data_home.html'), # список пунктов: резюме, кандидаты, письма. Пользователи этого не видят
     path('vacancies/', views.vacancies, name='vacancies'), # Список вакансий
     path('candidates/', views.candidates, name='candidates'), # Список кандидатов
     path('dashboard/', views.dashboard, name='dashboard'), # личный кабинет
     path('user_edit/', views.user_edit, name='user_edit'), # редактирование профиля пользователя
     path('templates/', views.templates, name='templates'), # список писем
     path('candidates/<int:pk>/', views.candidate_detail, name='candidate_detail'), # детали по конкретному кандидату
-    path('register/', views.register, name='register'), # регистрация
     path('login/', views.user_login, name='login'), # вход
     path('logout/', views.user_logout, name='logout'), # выход
     path('vacancy_create/', views.vacancy_create, name='vacancy_create'), # создание вакансии
@@ -28,5 +26,5 @@ urlpatterns = [
     path('candidate_edit/<int:pk>/', views.candidate_edit, name='candidate_edit'),  # редактирование карточки кандидата
     path('candidate_detail/<int:pk>/', views.candidate_detail, name='candidate_detail'),  # детали по кандидату
     path('candidate_delete/<int:pk>/', views.candidate_delete, name='candidate_delete'),  # удаление кандидата
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # обработка загружаемых файлов
 

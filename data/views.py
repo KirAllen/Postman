@@ -1,19 +1,21 @@
 import json
 from django.http import JsonResponse
 
-from .models import Vacancy, Candidate, Template, User
+from .models import Vacancy, Candidate, Template
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from .forms import UserRegisterForm, UserLoginForm, VacancyForm, TemplateForm, CandidateForm, UploadCandidatesForm, \
+from .forms import UserLoginForm, VacancyForm, TemplateForm, CandidateForm, UploadCandidatesForm, \
     UserEditForm
 
 import openpyxl
 
 from .emails import send_email_to_candidate
+
+from .YandexGPT import generation_letter
 
 
 # личный кабинет
@@ -181,18 +183,32 @@ def vacancy_delete(request, pk):
 # создание шаблона письма
 @login_required
 def template_create(request):
+    letter = None
+
     if request.method == 'POST':
         form = TemplateForm(request.POST)
         if form.is_valid():
-            template = form.save()
-            # Обновим связанные вакансии вручную
-            template.vacancies.clear()  # Убираем все старые связи
-            for vacancy in form.cleaned_data['vacancies']:
-                vacancy.templates.add(template)
-            return redirect('templates')
+            action = request.POST.get('action')
+
+            if action == 'generate':
+                vacancy = form.cleaned_data['vacancies'] if 'vacancies' in form.cleaned_data else None
+                if vacancy:
+                    if hasattr(vacancy, 'all'):
+                        vacancy = vacancy.first()
+                    if vacancy:
+                        letter = generation_letter(vacancy.title, vacancy.description)
+                        print(letter)
+            elif action == 'save':
+                template = form.save(commit=False) # сразу не сохраняем в бд
+                if letter:
+                    template.content = letter
+                template.save()
+                form.save_m2m()  # сохраняем связи M2M
+                return redirect('templates')
     else:
         form = TemplateForm()
-    return render(request, 'data/template_create.html', {'form': form})
+
+    return render(request, 'data/template_create.html', {'form': form, 'generated_text': letter})
 
 
 # редактирование шаблона письма
@@ -285,20 +301,6 @@ def send_vacancy_emails(request, vacancy_id):
         {"success": True, "message": f"Письма отправлены {sent} кандидатам."},
         json_dumps_params={'ensure_ascii': False}
     )
-
-
-# Регистрация
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # Автоматический вход после регистрации
-            messages.success(request, 'Регистрация прошла успешно!')
-            return redirect('dashboard')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'data/register.html', {'form': form})
 
 
 # Вход пользователя

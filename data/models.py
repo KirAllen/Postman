@@ -1,18 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import AbstractUser
-
-
-class User(AbstractUser):
-    firstname = models.CharField(max_length=100)
-    lastname = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
-
-    def __str__(self):
-        return self.username
+from registration.models import User
 
 
 class Candidate(models.Model):
@@ -56,8 +45,8 @@ class Candidate(models.Model):
 
 
 class Template(models.Model):
-    title = models.CharField(max_length=150)
-    content = models.TextField()
+    title = models.CharField(max_length=150, blank=True)
+    content = models.TextField(blank=True)
 
     class Meta:
         verbose_name = "Письмо"
@@ -68,8 +57,8 @@ class Template(models.Model):
 
 
 class Vacancy(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
+    title = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['89.169.191.30', 'postmanvacancies.ru', 'www.postmanvacancies.r
 INSTALLED_APPS = [
     'main',
     'data',
+    'registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,7 +129,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'data.User'
+AUTH_USER_MODEL = 'registration.User'
 
 LOGIN_URL = 'login'  # имя URL для входа
 LOGIN_REDIRECT_URL = 'dashboard'  # куда перенаправлять после входа
@@ -141,3 +142,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'kir.allyanov@gmail.com'
 EMAIL_HOST_PASSWORD = 'qnxg fthr izce phiu'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+

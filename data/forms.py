@@ -1,15 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User, Candidate, Vacancy, Template
+from .models import Candidate, Vacancy, Template
 
-
-# Форма регистрации пользователя
-class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
+from registration.models import User
 
 
 # Форма входа (логина)
@@ -86,6 +79,7 @@ class VacancyForm(forms.ModelForm):
                   'templates']
 
 
+# Форма создания письма
 class TemplateForm(forms.ModelForm):
     vacancies = forms.ModelMultipleChoiceField(
         queryset=Vacancy.objects.all(),

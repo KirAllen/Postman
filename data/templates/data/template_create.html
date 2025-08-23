@@ -20,11 +20,16 @@
 
     <!-- Поле description -->
     <div class="form-group" style="margin-bottom: 15px;">
-        <label for="{{ form.content.id_for_label }}">Содержание письма</label><br>
-        {{ form.content }}
-        {% if form.content.errors %}
-            <div class="error">{{ form.content.errors }}</div>
-        {% endif %}
+    <label for="{{ form.content.id_for_label }}">Содержание письма</label><br>
+    <textarea id="{{ form.content.id_for_label }}"
+              name="{{ form.content.name }}"
+              class="form-control"
+              rows="10">
+        {% if generated_text %}{{ generated_text }}{% else %}{{ form.content.value|default_if_none:"" }}{% endif %}
+    </textarea>
+    {% if form.content.errors %}
+        <div class="error">{{ form.content.errors }}</div>
+    {% endif %}
     </div>
 
     <!-- Поле vacancies -->
@@ -38,8 +43,11 @@
 
     <!-- Кнопки -->
     <div class="form-actions" style="text-align: center;">
-        <button type="submit" class="btn btn-save">Сохранить</button>
+        <button type="submit" name="action" value="generate">Сгенерировать письмо</button>
+        <button type="submit" name="action" value="save">Сохранить</button>
         <a href="{% url 'templates' %}" class="btn btn-cancel">Отменить</a>
     </div>
 </form>
+
+
 {% endblock %}
