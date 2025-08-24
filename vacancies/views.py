@@ -14,7 +14,7 @@ from .emails import send_email_to_candidate
 @login_required
 def vacancies(request):
     vacancies = Vacancy.objects.filter(user=request.user)
-    return render(request, 'data/vacancies.html', {'vacancies': vacancies})
+    return render(request, 'vacancies/vacancies.html', {'vacancies': vacancies})
 
 
 # создание новой вакансии
@@ -30,14 +30,14 @@ def vacancy_create(request):
             return redirect('vacancies')
     else:
         form = VacancyForm()
-    return render(request, 'data/vacancy_create.html', {'form': form})
+    return render(request, 'vacancies/vacancy_create.html', {'form': form})
 
 
 # подробная информация о вакансии
 @login_required
 def vacancy_detail(request, pk):
     vacancy = get_object_or_404(Vacancy, pk=pk)
-    return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
+    return render(request, 'vacancies/vacancy_detail.html', {'vacancy': vacancy})
 
 
 # редактирование вакансии
@@ -55,7 +55,7 @@ def vacancy_edit(request, pk):
     else:
         form = VacancyForm(instance=vacancy)
 
-    return render(request, 'data/vacancy_create.html', {'form': form, 'editing': True})
+    return render(request, 'vacancies/vacancy_create.html', {'form': form, 'editing': True})
 
 
 # удаление вакансии
@@ -65,7 +65,7 @@ def vacancy_delete(request, pk):
     if request.method == 'POST':
         vacancy.delete()
         return redirect('vacancies')
-    return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
+    return render(request, 'vacancies/vacancy_detail.html', {'vacancy': vacancy})
 
 
 # Отправка писем кандидатам
@@ -86,7 +86,6 @@ def send_vacancy_emails(request, vacancy_id):
 
     candidate_ids = data.get('candidates', [])
     template_id = data.get('template_id')
-
 
     if not candidate_ids:
         return JsonResponse({'success': False, "message": 'Ну выбери, кому ты там писать собрался'}, status=400,

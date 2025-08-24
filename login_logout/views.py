@@ -15,12 +15,12 @@ def user_login(request):
             return redirect('dashboard')
     else:
         form = UserLoginForm()
-    return render(request, 'data/login.html', {'form': form})
+    return render(request, 'login_logout/login.html', {'form': form})
 
 
 # Выход пользователя
 def user_logout(request):
     logout(request)
     messages.info(request, 'Вы вышли из аккаунта.')
-    return redirect('/data/login')
+    return redirect('login_logout/login')
 

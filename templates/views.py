@@ -10,7 +10,7 @@ from .YandexGPT import generation_letter
 @login_required
 def templates(request):
     templates = Template.objects.all()
-    return render(request, 'data/templates.html', {'templates': templates})
+    return render(request, 'templates/templates.html', {'templates': templates})
 
 
 # создание шаблона письма
@@ -41,7 +41,7 @@ def template_create(request):
     else:
         form = TemplateForm()
 
-    return render(request, 'data/template_create.html', {'form': form, 'generated_text': letter})
+    return render(request, 'templates/template_create.html', {'form': form, 'generated_text': letter})
 
 
 # редактирование шаблона письма
@@ -62,14 +62,14 @@ def template_edit(request, pk):
     else:
         form = TemplateForm(instance=template)
 
-    return render(request, 'data/template_create.html', {'form': form, 'editing': True})
+    return render(request, 'templates/template_create.html', {'form': form, 'editing': True})
 
 
 # информация по письму
 @login_required
 def template_detail(request, pk):
     template = get_object_or_404(Template, pk=pk)
-    return render(request, 'data/template_detail.html', {'template': template})
+    return render(request, 'templates/template_detail.html', {'template': template})
 
 
 # удаление пиьсма
@@ -79,4 +79,4 @@ def template_delete(request, pk):
     if request.method == 'POST':
         template.delete()
         return redirect('templates')
-    return render(request, 'data/template_detail.html', {'template': template})
+    return render(request, 'templates/template_detail.html', {'template': template})
