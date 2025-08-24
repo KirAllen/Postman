@@ -1,6 +1,6 @@
 from django import forms
 from candidates.models import Candidate
-from data.models import Template
+from templates.models import Template
 from .models import Vacancy
 
 

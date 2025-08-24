@@ -28,6 +28,7 @@ urlpatterns = [
     path('log/', include('login_logout.urls')),
     path('candidates/', include('candidates.urls')),
     path('vacancies/', include('vacancies.urls')),
+    path('templates/', include('templates.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

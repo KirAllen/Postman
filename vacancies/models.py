@@ -2,7 +2,7 @@ from django.db import models
 
 from registration.models import User
 from candidates.models import Candidate
-from data.models import Template
+from templates.models import Template
 
 class Vacancy(models.Model):
     title = models.CharField(max_length=100, blank=True)

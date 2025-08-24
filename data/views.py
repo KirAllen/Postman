@@ -1,14 +1,13 @@
 import json
 from django.http import JsonResponse
 
-from .models import Template
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from .forms import TemplateForm, UserEditForm
+from .forms import UserEditForm
 
 import openpyxl
 
@@ -23,11 +22,11 @@ def dashboard(request):
     return render(request, 'data/dashboard.html')
 
 
-# шаблоны писем кандидатам
-@login_required
-def templates(request):
-    templates = Template.objects.all()
-    return render(request, 'data/templates.html', {'templates': templates})
+# # шаблоны писем кандидатам
+# @login_required
+# def templates(request):
+#     templates = Template.objects.all()
+#     return render(request, 'data/templates.html', {'templates': templates})
 
 #
 # # список всех кандидатов
@@ -178,74 +177,74 @@ def templates(request):
 #         return redirect('vacancies')
 #     return render(request, 'data/vacancy_detail.html', {'vacancy': vacancy})
 
-
-# создание шаблона письма
-@login_required
-def template_create(request):
-    letter = None
-
-    if request.method == 'POST':
-        form = TemplateForm(request.POST)
-        if form.is_valid():
-            action = request.POST.get('action')
-
-            if action == 'generate':
-                vacancy = form.cleaned_data['vacancies'] if 'vacancies' in form.cleaned_data else None
-                if vacancy:
-                    if hasattr(vacancy, 'all'):
-                        vacancy = vacancy.first()
-                    if vacancy:
-                        letter = generation_letter(vacancy.title, vacancy.description)
-                        print(letter)
-            elif action == 'save':
-                template = form.save(commit=False) # сразу не сохраняем в бд
-                if letter:
-                    template.content = letter
-                template.save()
-                form.save_m2m()  # сохраняем связи M2M
-                return redirect('templates')
-    else:
-        form = TemplateForm()
-
-    return render(request, 'data/template_create.html', {'form': form, 'generated_text': letter})
-
-
-# редактирование шаблона письма
-@login_required
-def template_edit(request, pk):
-    template = get_object_or_404(Template, pk=pk)
-
-    if request.method == 'POST':
-        form = TemplateForm(request.POST, instance=template)
-        if form.is_valid():
-            template = form.save()
-            # Сбрасываем старые связи
-            template.vacancies.clear()
-            # Устанавливаем новые
-            for vacancy in form.cleaned_data['vacancies']:
-                vacancy.templates.add(template)
-            return redirect('template_detail', pk=template.pk)
-    else:
-        form = TemplateForm(instance=template)
-
-    return render(request, 'data/template_create.html', {'form': form, 'editing': True})
-
-
-# информация по письму
-@login_required
-def template_detail(request, pk):
-    template = get_object_or_404(Template, pk=pk)
-    return render(request, 'data/template_detail.html', {'template': template})
-
-
-# удаление пиьсма
-@login_required
-def template_delete(request, pk):
-    template = get_object_or_404(Template, pk=pk)
-    if request.method == 'POST':
-        template.delete()
-        return redirect('templates')
-    return render(request, 'data/template_detail.html', {'template': template})
+#
+# # создание шаблона письма
+# @login_required
+# def template_create(request):
+#     letter = None
+#
+#     if request.method == 'POST':
+#         form = TemplateForm(request.POST)
+#         if form.is_valid():
+#             action = request.POST.get('action')
+#
+#             if action == 'generate':
+#                 vacancy = form.cleaned_data['vacancies'] if 'vacancies' in form.cleaned_data else None
+#                 if vacancy:
+#                     if hasattr(vacancy, 'all'):
+#                         vacancy = vacancy.first()
+#                     if vacancy:
+#                         letter = generation_letter(vacancy.title, vacancy.description)
+#                         print(letter)
+#             elif action == 'save':
+#                 template = form.save(commit=False) # сразу не сохраняем в бд
+#                 if letter:
+#                     template.content = letter
+#                 template.save()
+#                 form.save_m2m()  # сохраняем связи M2M
+#                 return redirect('templates')
+#     else:
+#         form = TemplateForm()
+#
+#     return render(request, 'data/template_create.html', {'form': form, 'generated_text': letter})
+#
+#
+# # редактирование шаблона письма
+# @login_required
+# def template_edit(request, pk):
+#     template = get_object_or_404(Template, pk=pk)
+#
+#     if request.method == 'POST':
+#         form = TemplateForm(request.POST, instance=template)
+#         if form.is_valid():
+#             template = form.save()
+#             # Сбрасываем старые связи
+#             template.vacancies.clear()
+#             # Устанавливаем новые
+#             for vacancy in form.cleaned_data['vacancies']:
+#                 vacancy.templates.add(template)
+#             return redirect('template_detail', pk=template.pk)
+#     else:
+#         form = TemplateForm(instance=template)
+#
+#     return render(request, 'data/template_create.html', {'form': form, 'editing': True})
+#
+#
+# # информация по письму
+# @login_required
+# def template_detail(request, pk):
+#     template = get_object_or_404(Template, pk=pk)
+#     return render(request, 'data/template_detail.html', {'template': template})
+#
+#
+# # удаление пиьсма
+# @login_required
+# def template_delete(request, pk):
+#     template = get_object_or_404(Template, pk=pk)
+#     if request.method == 'POST':
+#         template.delete()
+#         return redirect('templates')
+#     return render(request, 'data/template_detail.html', {'template': template})
 
 #
 # # Отправка писем кандидатам
