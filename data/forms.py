@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Candidate, Vacancy, Template
+from .models import Candidate, Template
 
+from vacancies.models import Vacancy
 from registration.models import User
 
 
@@ -55,29 +56,29 @@ from registration.models import User
 #             self.fields['vacancies'].initial = instance.vacancies.all()
 
 
-# Форма создания вакансии
-class VacancyForm(forms.ModelForm):
-    candidates = forms.ModelMultipleChoiceField(
-        queryset=Candidate.objects.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        label="Кандидаты"
-    )
-
-    templates = forms.ModelMultipleChoiceField(
-        queryset=Template.objects.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        label="Письма"
-    )
-
-    class Meta:
-        model = Vacancy
-        fields = ['title',
-                  'description',
-                  'candidates',
-                  'templates']
-
+# # Форма создания вакансии
+# class VacancyForm(forms.ModelForm):
+#     candidates = forms.ModelMultipleChoiceField(
+#         queryset=Candidate.objects.all(),
+#         required=False,
+#         widget=forms.CheckboxSelectMultiple,
+#         label="Кандидаты"
+#     )
+#
+#     templates = forms.ModelMultipleChoiceField(
+#         queryset=Template.objects.all(),
+#         required=False,
+#         widget=forms.CheckboxSelectMultiple,
+#         label="Письма"
+#     )
+#
+#     class Meta:
+#         model = Vacancy
+#         fields = ['title',
+#                   'description',
+#                   'candidates',
+#                   'templates']
+#
 
 # Форма создания письма
 class TemplateForm(forms.ModelForm):

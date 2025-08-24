@@ -1,7 +1,7 @@
 from django import forms
 
 from .models import Candidate
-from data.models import Vacancy
+from vacancies.models import Vacancy
 
 
 # Форма кандидата (заполнение профиля)

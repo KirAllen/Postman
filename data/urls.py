@@ -4,17 +4,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('vacancies/', views.vacancies, name='vacancies'), # Список вакансий
+    # path('vacancies/', views.vacancies, name='vacancies'), # Список вакансий
     # path('candidates/', views.candidates, name='candidates'), # Список кандидатов
     path('dashboard/', views.dashboard, name='dashboard'), # личный кабинет
     path('user_edit/', views.user_edit, name='user_edit'), # редактирование профиля пользователя
     path('templates/', views.templates, name='templates'), # список писем
     # path('candidates/<int:pk>/', views.candidate_detail, name='candidate_detail'), # детали по конкретному кандидату
-    path('vacancy_create/', views.vacancy_create, name='vacancy_create'), # создание вакансии
-    path('vacancy_edit/<int:pk>/', views.vacancy_edit, name='vacancy_edit'), # редактирование конкретной вакансии
-    path('vacancy_detail/<int:pk>/', views.vacancy_detail, name='vacancy_detail'), # детали по конкретной вакансии
-    path('vacancy_delete/<int:pk>/', views.vacancy_delete, name='vacancy_delete'),  # удаление вакансии
-    path('vacancies/<int:vacancy_id>/send_emails/', views.send_vacancy_emails, name='send_vacancy_emails'), # отправка писем по вакансии
+    # path('vacancy_create/', views.vacancy_create, name='vacancy_create'), # создание вакансии
+    # path('vacancy_edit/<int:pk>/', views.vacancy_edit, name='vacancy_edit'), # редактирование конкретной вакансии
+    # path('vacancy_detail/<int:pk>/', views.vacancy_detail, name='vacancy_detail'), # детали по конкретной вакансии
+    # path('vacancy_delete/<int:pk>/', views.vacancy_delete, name='vacancy_delete'),  # удаление вакансии
+    # path('vacancies/<int:vacancy_id>/send_emails/', views.send_vacancy_emails, name='send_vacancy_emails'), # отправка писем по вакансии
     path('template_create/', views.template_create, name='template_create'), # Создание шаблона письмак
     path('template_edit/<int:pk>', views.template_edit, name='template_edit'), # редактирование письма
     path('template_detail/<int:pk>/', views.template_detail, name='template_detail'), # детали по конкретнму письму

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'registration',
     'login_logout',
     'candidates',
+    'vacancies',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
