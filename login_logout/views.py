@@ -22,5 +22,5 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     messages.info(request, 'Вы вышли из аккаунта.')
-    return redirect('login_logout/login')
+    return redirect('login')
 
