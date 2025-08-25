@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ['89.169.191.30', 'postmanvacancies.ru', 'www.postmanvacancies.r
 
 INSTALLED_APPS = [
     'main',
-    'data',
+    'user_profile',
     'registration',
     'login_logout',
     'candidates',

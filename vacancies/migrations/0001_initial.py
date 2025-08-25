@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('data', '0024_delete_vacancy'),
+        ('user_profile', '0024_delete_vacancy'),
         ('candidates', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(blank=True, max_length=100)),
                 ('description', models.TextField(blank=True)),
                 ('candidates', models.ManyToManyField(blank=True, related_name='vacancies', to='candidates.candidate')),
-                ('templates', models.ManyToManyField(blank=True, related_name='vacancies', to='data.template')),
+                ('templates', models.ManyToManyField(blank=True, related_name='vacancies', to='user_profile.template')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='vacancies', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
